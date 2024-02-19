@@ -25,7 +25,9 @@ export const signin= async (req,res,next)=>{
     const token=jwt.sign({id:validUser._id},process.env.JWT_SECRET);
     const validuserObj=validUser.toObject()
     delete validuserObj.password;
-    res.cookie('access_token',token,{httpOnly:true,expires:new Date(Date.now()+24*60*60*1000)}).status(200).json(validuserObj);
+    res.cookie('access_token',token,{httpOnly:true,
+      // expires:new Date(Date.now()+24*60*60*1000)
+    }).status(200).json(validuserObj);
   }
   catch(e){
     next(e)
