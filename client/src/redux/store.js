@@ -9,7 +9,7 @@ const rootReducer=combineReducers({
 const persistConfig={
     key:'root',
     storage,
-    version:1
+    version:1,
 }
 // setting the name of the key in localstorage
 const persistedReducer=persistReducer(persistConfig,rootReducer)

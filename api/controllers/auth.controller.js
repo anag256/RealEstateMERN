@@ -33,3 +33,34 @@ export const signin= async (req,res,next)=>{
     next(e)
   }
 }
+export const google=async (req,res,next)=>{
+
+  try{
+    const user= await User.findOne({email:req.body.email})
+    if(user){
+      const token=jwt.sign({id:user._id},process.env.JWT_SECRET);
+      const validuserObj=user.toObject()
+      delete validuserObj.password;
+      res.cookie('access_token',token,{httpOnly:true,
+        // expires:new Date(Date.now()+24*60*60*1000)
+      }).status(200).json(validuserObj);
+    }
+    else{
+      //since no pwd from google but in model pwd is mandatory hence create random pwd
+      const generatedPwd=Math.random().toString(36).slice(-8)+ Math.random().toString(36).slice(-8);
+      const hashedPwd=bcryptjs.hashSync(generatedPwd,10);
+      const newUser=new User({username:req.body.name.split(" ").join("").toLowerCase()+Math.random().toString(36).slice(-4),email:req.body.email,password:hashedPwd,avatar:req.body.photo})
+     console.log(newUser)
+      await newUser.save();
+     const validuserObj=newUser.toObject()
+     delete validuserObj.password;
+     res.cookie('access_token',token,{httpOnly:true,
+      // expires:new Date(Date.now()+24*60*60*1000)
+    }).status(200).json(validuserObj);
+    }
+    }
+    catch(e){
+      next(e);
+    }
+  }
+
